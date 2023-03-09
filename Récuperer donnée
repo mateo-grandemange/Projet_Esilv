@@ -1,0 +1,1 @@
+curl -s https://www.boursorama.com/bourse/indices/cours/%24INX/ | grep -oP '(?<=<span class="c-instrument c-instrument--last" data-ist-last>)[^<]+' | head -1 | tr ',' '.'
