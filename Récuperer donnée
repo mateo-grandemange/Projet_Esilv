@@ -1,3 +1,5 @@
 curl -s https://www.boursorama.com/bourse/indices/cours/%24INX/ | grep -oP '(?<=<span class="c-instrument c-instrument--last" data-ist-last>)[^<]+' | head -1 | tr ',' '.'
 
 curl -s https://www.boursorama.com/bourse/indices/cours/%24INX/ | grep -oP '(?<=<span class="c-instrument c-instrument--last" data-ist-last>)[^<]+' | head -1
+
+curl -s https://www.boursorama.com/cours/1rPGLE/ | grep -oP '(?<=<span class="c-instrument c-instrument--last" data-ist-last>)[^<]+' | head -1
