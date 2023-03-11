@@ -47,3 +47,74 @@ def update_data(n):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
+
+
+
+
+
+
+
+
+Version test avec graphe : 
+import dash
+from dash import dcc
+from dash import html
+from dash import Output, Input
+import time
+import datetime
+
+app = dash.Dash(__name__)
+
+def get_data():
+    with open('/home/mateo_grandemange/projet/projet.txt', 'r') as file:
+        data = file.read().strip()
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d à %H:%M:%S')
+    return {"value": data, "time": current_time}
+
+# Define an empty list to store the historical data points
+data_points = []
+
+app.layout = html.Div([
+    html.H1('Dashboard de Mateo Grandemange IF3', style={'text-align': 'center', 'color': 'darkblue'}),
+    html.H2('Valeur de l\'action de Société Générale'),
+    html.Div(id='data-update'),
+    dcc.Graph(id='data-graph', figure={'data': []}),
+    dcc.Interval(
+        id='interval-component',
+        interval=5*60*1000,  # update every 5 minutes
+        n_intervals=0
+    )
+], style={'background-color': 'lightblue', 'height': '100vh'})
+
+@app.callback(Output('data-update', 'children'),
+              [Input('interval-component', 'n_intervals')])
+def update_data(n):
+    data_points = []
+    data = get_data()
+    data_points.append(data)
+    # Keep only the last 20 data points to avoid cluttering the graph
+    data_points = data_points[-20:]
+    return f'La valeur actuelle est de {data["value"]} €, le {data["time"]}'
+
+@app.callback(Output('data-graph', 'figure'),
+              [Input('interval-component', 'n_intervals')])
+def update_graph(n):
+    # Create a list of x and y values for the line chart
+    x_values = [point['time'] for point in data_points]
+    y_values = [point['value'] for point in data_points]
+    return {
+        'data': [{
+            'x': x_values,
+            'y': y_values,
+            'type': 'line'
+        }],
+        'layout': {
+            'title': 'Historique des valeurs de l\'action de Société Générale',
+            'xaxis': {'title': 'Date et heure'},
+            'yaxis': {'title': 'Valeur de l\'action (€)'}
+        }
+    }
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
