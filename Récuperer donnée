@@ -25,25 +25,25 @@ app = dash.Dash(__name__)
 def get_data():
     with open('/home/mateo_grandemange/projet/projet.txt', 'r') as file:
         data = file.read().strip()
-        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return f'{data} ({current_time})'
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d à %H:%M:%S')
+    return f'{data} €, le {current_time}'
 
 app.layout = html.Div([
-    html.H1('Dashboard de Mateo Grandemange IF3'),
+    html.H1('Dashboard de Mateo Grandemange IF3',style={'text-align': 'center', 'color': 'darkblue'}),
     html.H2('Valeur de l\'action de Société Générale'),
     html.Div(id='data-update'),
     dcc.Interval(
         id='interval-component',
-        interval=5*1000,  # update every 5 seconds
+        interval=5*60*1000,  # update every 5 seconds
         n_intervals=0
     )
-])
+], style={'background-color': 'lightblue', 'height': '100vh'})
 
 @app.callback(Output('data-update', 'children'),
               [Input('interval-component', 'n_intervals')])
 def update_data(n):
     data = get_data()
-    return f'La valeur actuelle est: {data}'
+    return f'La valeur actuelle est de {data}'
 
 if __name__ == '__main__':
     app.run_server(debug=True)
