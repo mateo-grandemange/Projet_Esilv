@@ -190,3 +190,6 @@ def update_graph(n):
 if __name__ == '__main__':
     app.run_server(debug=True)
 
+
+
+Y a juste à changer ca : interval=5*60*1000 pour avoir un autre temps
