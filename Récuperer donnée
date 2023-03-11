@@ -5,3 +5,45 @@ curl -s https://www.boursorama.com/bourse/indices/cours/%24INX/ | grep -oP '(?<=
 curl -s https://www.boursorama.com/cours/1rPGLE/ | grep -oP '(?<=<span class="c-instrument c-instrument--last" data-ist-last>)[^<]+' | head -1
 
 curl -s https://www.boursorama.com/bourse/indices/cours/1rPCAC/ | grep -oP '(?<=<span class="c-instrument c-instrument--last" data-ist-last>)[^<]+' | head -1
+
+
+Etapes : 
+
+cd projet
+curl -s https://www.boursorama.com/cours/1rPGLE/ | grep -oP '(?<=<span class="c-instrument c-instrument--last" data-ist-last>)[^<]+' | head -1 > projet.txt
+
+
+import dash
+from dash import dcc
+from dash import html
+from dash import Output, Input
+import time
+import datetime
+
+app = dash.Dash(__name__)
+
+def get_data():
+    with open('/home/mateo_grandemange/projet/projet.txt', 'r') as file:
+        data = file.read().strip()
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return f'{data} ({current_time})'
+
+app.layout = html.Div([
+    html.H1('Dashboard de Mateo Grandemange IF3'),
+    html.H2('Valeur de l\'action de Société Générale'),
+    html.Div(id='data-update'),
+    dcc.Interval(
+        id='interval-component',
+        interval=5*1000,  # update every 5 seconds
+        n_intervals=0
+    )
+])
+
+@app.callback(Output('data-update', 'children'),
+              [Input('interval-component', 'n_intervals')])
+def update_data(n):
+    data = get_data()
+    return f'La valeur actuelle est: {data}'
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
