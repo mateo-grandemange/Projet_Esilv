@@ -1,0 +1,5 @@
+Etapes : 
+
+crontab -e
+
+ */5 * * * * /
