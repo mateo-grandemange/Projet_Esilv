@@ -39,11 +39,12 @@ def update_data(n):
     global data_points
     data = get_data()
     data_points.append(data)
-    
-    daily_values = [float(point['value']) for point in data_points if point['time'].startswith(datetime.datetime.now().strftime('%Y-%m-%d'))]
+
+    daily_values = [float(point['value']) for point in data_points if point['time'].startswith(datetime.datetime.now().strftime('%Y-%m-%d'))
+                    and '09:00:00' <= point['time'].split(' ')[-1] <= '17:30:00']
     daily_average = round(statistics.mean(daily_values), 2) if daily_values else 0
-    daily_max = round(max(daily_values), 2)
-    daily_min = round(min(daily_values), 2) 
+    daily_max = round(max(daily_values), 2) if daily_values else 0
+    daily_min = round(min(daily_values), 2) if daily_values else 0
 
     if datetime.datetime.now().strftime('%H:%M:%S') >= '20:00:00' and datetime.datetime.now().strftime('%H:%M:%S') <= '23:59:59':
         return html.Div([
@@ -58,8 +59,7 @@ def update_data(n):
             html.Div(f'La valeur actuelle est de {data["value"]} €, le {data["time"]}'),
             html.Div(f'Les stats de la journée ne sont pas encore disponibles, veuillez revenir à partir de 20h\n')
             ])
-        
-    
+
 @app.callback(Output('data-graph', 'figure'),
               [Input('interval-component', 'n_intervals')])
 
@@ -76,7 +76,7 @@ def update_graph(n):
             'type': 'line'
         }],
         'layout': {
-            'title': 'Historique des valeurs de l\'action de Société Générale',
+            'title': 'Historique du jour des valeurs de l\'action de Société Générale',
             'xaxis': {'title': 'Date et heure'},
             'yaxis': {'title': 'Valeur de l\'action (€)'}
         }
@@ -84,4 +84,3 @@ def update_graph(n):
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0',port=8050,debug=True)
-
